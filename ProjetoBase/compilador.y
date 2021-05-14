@@ -17,6 +17,11 @@ int num_vars;
 %token PROGRAM ABRE_PARENTESES FECHA_PARENTESES
 %token VIRGULA PONTO_E_VIRGULA DOIS_PONTOS PONTO
 %token T_BEGIN T_END VAR IDENT ATRIBUICAO
+%token ABRE_COLCHETES FECHA_COLCHETES ABRE_CHAVES FECHA_CHAVES
+%token MAIOR MAIOR_IGUAL MENOR MENOR_IGUAL IGUAL DIFERENTE
+%token SOMA SUBTRACAO MULTIPLICACAO DIVISAO 
+%token AND OR LABEL TYPE ARRAY OF PROCEDURE FUNCTION
+%token IF ELSE WHILE DO NOT THEN
 
 %%
 
@@ -65,8 +70,8 @@ tipo        : IDENT
 ;
 
 lista_id_var: lista_id_var VIRGULA IDENT
-              { /* insere �ltima vars na tabela de s�mbolos */ }
-            | IDENT { /* insere vars na tabela de s�mbolos */}
+              { /* insere ultima vars na tabela de simbolos */ }
+            | IDENT { /* insere vars na tabela de simbolos */}
 ;
 
 lista_idents: lista_idents VIRGULA IDENT
