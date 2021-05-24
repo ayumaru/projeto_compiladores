@@ -10,6 +10,9 @@
 #include <string.h>
 #include "compilador.h"
 
+
+#include "funcoes.c"
+
 int num_vars;
 
 %}
@@ -104,7 +107,7 @@ int main (int argc, char** argv) {
 
 
 /* -------------------------------------------------------------------
- *  Inicia a Tabela de S�mbolos
+ *  Inicia a Tabela de Simbolos
  * ------------------------------------------------------------------- */
 
    yyin=fp;
