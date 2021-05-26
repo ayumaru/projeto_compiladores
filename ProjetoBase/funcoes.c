@@ -1,22 +1,22 @@
 #include <stdio.h>
 #include "compilador.h"
 
-typedef struct simbolo{
+typedef struct TabSimbolo{
     int nivel_lexico[2]; // nivel e deslocamento
     int categoria; // variavel simples, procedimento, etc
     char *identificador; // label
     int tipos; // tipos de variavel
     char nome[TAM_TOKEN];
-} simbolo;
+} TabSimbolo;
 
-typedef struct{
+typedef struct nodo{
     void *elemento;
     struct nodo *prox, *prev;
 }nodo;
 
 typedef struct{
-    nodo *inicio, *fim;
     int tam;
+    nodo *inicio, *fim;
 }pilha;
 
 void inicia_pilha(pilha *stack){
@@ -25,7 +25,7 @@ void inicia_pilha(pilha *stack){
     stack->tam = 0;
 }
 
-void verifica_vazio(pilha *stack){
+int verifica_vazio(pilha *stack){
     return (stack->inicio == NULL);
 }
 
@@ -63,11 +63,11 @@ void *retira_elemento(pilha *stack){
     }
 }
 
-simbolo *busca_simbolo(char nome_simbolo[TAM_TOKEN], pilha *stack){
+TabSimbolo *busca_simbolo(char nome_simbolo[TAM_TOKEN], pilha *stack){
     nodo *temp;
     for ( temp =stack->fim; temp !=NULL; temp=temp->prev ) // busca de traz pra frente para respeitar o nivel 
     {
-        simbolo *simb = (simbolo*)temp->elemento;
+        TabSimbolo *simb = (TabSimbolo*)temp->elemento;
         if ( strcmp(simb->nome, nome_simbolo) == 0)
             return simb;
     } 

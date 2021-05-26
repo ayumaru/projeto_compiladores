@@ -1,6 +1,6 @@
 
 // Testar se funciona corretamente o empilhamento de par�metros
-// passados por valor ou por refer�ncia.
+// passados por valor ou por referencia.
 
 
 %{
@@ -8,7 +8,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include "compilador.h"
+// #include "compilador.h"
 
 
 #include "funcoes.c"
