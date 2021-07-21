@@ -9,6 +9,7 @@ APAGAR: RAFAEL v
 #include <string.h>
 #include "funcoes.h"
 #include "compilador.h"
+#include "debug.h"
 
 
 void adicionar_tipo_simb(tab_simbolo *elemento_tab, tipos_enum tipo)
@@ -81,7 +82,8 @@ tab_simbolo *busca_simbolo(pilha_tab_simbolo *tabela, char *nome)
             return elemento_tab;
         }
     }
-    // debug
+    
+    debug("[ERRO] não foi possivel encontrar o simbolo [%s] na tabela. \n", nome);
     error_handler("Simbolo nao encontrado na tabela"); // funcao do compilador.h
     return NULL;
 }
@@ -246,6 +248,7 @@ tab_simbolo *pega_rotulo_tabela_simbolo(pilha_tab_simbolo *tabela, char *rotulo)
     }
     
     //debug
+    debug("[ERRO] Não existe variavel associada ao rotulo >> [%s]\n",rotulo);
     error_handler("Rotulo nao esta presente na tabela de simbolos.");
     return NULL; // nao achou 
 }
@@ -316,13 +319,13 @@ tipos_enum encontra_tipo_en_do_simbolo_procedimento(tab_simbolo *elemento_tab, i
     // talvez nao precise desses debug, mas vemos depois
     if (posicao > elemento_tab->qnt_paramentros )
     {
-        debug("[error] O procedimento [%s] não pode acessar a variavel, somente acessa [%d] variaveis, posicao ->[%d]",elemento_tab->id, elemento_tab->qnt_paramentros, posicao);
+        debug("[ERRO] O procedimento [%s] não pode acessar a variavel, somente acessa [%d] variaveis, posicao ->[%d]",elemento_tab->id, elemento_tab->qnt_paramentros, posicao);
     }
 
     if (posicao < 0)
     {
-        debug("[error] Como o procedimento le de tras para frente sera acessado posicao - num vair, sendo assim possivel ultrapassar o numero de variaveis e passando um numero negativo");
-        debug("[error] O procedimento [%s] não pode acessar a variavel, somente acessa [%d] variaveis, posicao ->[%d]",elemento_tab->id, elemento_tab->qnt_paramentros, posicao);
+        debug("[ERRO] Como o procedimento le de tras para frente sera acessado posicao - num vair, sendo assim possivel ultrapassar o numero de variaveis e passando um numero negativo");
+        debug("[ERRO] O procedimento [%s] não pode acessar a variavel, somente acessa [%d] variaveis, posicao ->[%d]",elemento_tab->id, elemento_tab->qnt_paramentros, posicao);
     }
 
     nodo = elemento_tab->prox;
@@ -332,6 +335,9 @@ tipos_enum encontra_tipo_en_do_simbolo_procedimento(tab_simbolo *elemento_tab, i
         posicao-=1;
         nodo = nodo->prox;
     }
+
+    if ( posicao > 0 )
+        debug("[ERRO] O nodo foi encontrado antes do tipo, verificar erro [%s], posicao ->[%d]", elemento_tab->id ,posicao);
 
     return nodo->tipo;
 }
