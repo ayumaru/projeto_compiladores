@@ -90,6 +90,10 @@ comandos:
 
 %%
 
+void yyerror (char const *s) {
+  fprintf (stderr, "%s\n", s);
+}
+
 int main (int argc, char** argv) {
    FILE* fp;
    extern FILE* yyin;

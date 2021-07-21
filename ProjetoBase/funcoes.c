@@ -14,6 +14,7 @@ typedef struct nodo{
     struct nodo *prox, *prev;
 }nodo;
 
+
 typedef struct{
     int tam;
     nodo *inicio, *fim;
