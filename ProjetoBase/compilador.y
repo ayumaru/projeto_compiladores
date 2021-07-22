@@ -10,7 +10,7 @@
 #include <string.h>
 #include "compilador.h"
 #include "debug.h"
-#include "funcoes.c"
+#include "funcoes.h"
 
 int num_vars;
 

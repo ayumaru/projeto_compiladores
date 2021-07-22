@@ -2,6 +2,7 @@
 #define __DEBUG__
 
 #include "funcoes.h"
+#include "pilha.h"
 
 #ifdef DEBUG
 #define debug(fmt, ...) fprintf(stderr, fmt, ##__VA_ARGS__)
