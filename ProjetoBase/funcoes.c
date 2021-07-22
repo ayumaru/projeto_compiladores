@@ -4,12 +4,12 @@ PARA BUSCA: termo >>>> nao sei pq faz isso, investigar
     - Verificar o motivo do pq foi feito isso
 APAGAR: RAFAEL v
 */
+#include "debug.h"
+#include "funcoes.h"
+#include "compilador.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "funcoes.h"
-#include "compilador.h"
-#include "debug.h"
 
 
 void adicionar_tipo_simb(tab_simbolo *elemento_tab, tipos_enum tipo)
@@ -190,7 +190,7 @@ void atualiza_deslocament_tabela_simbolo(pilha_tab_simbolo *tabela, int deslocam
 # Serve para modificar as variaveis simples para categoria de parametro formal
 # Adiciona os tipos de valores ao vetor de tipo
 */
-void atualiza_simbolo_procedimento_tabela_simbolo(pilha_tab_simbolo *tabela, int deslocamento, tab_simbolo *elemento_pai)
+int atualiza_simbolo_procedimento_tabela_simbolo(pilha_tab_simbolo *tabela, int deslocamento, tab_simbolo *elemento_pai)
 {
     tab_simbolo *elemento_tab;
     int posicao = elemento_pai->qnt_paramentros;
@@ -372,7 +372,7 @@ tab_simbolo *busca_parametro_lista_simbolo(pilha_tab_simbolo *tabela, tab_simbol
 
 void imprime_tabela_simbolo(pilha_tab_simbolo *tabela) // apagar eventualmente 
 {
-    tab_simbolo elemento_tab;
+    tab_simbolo *elemento_tab;
     // debug
     elemento_tab = tabela->ultimo;
     while (elemento_tab != NULL)

@@ -8,12 +8,13 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-// #include "compilador.h"
-
-
-#include "funcoes.c"
+#include "./compilador.h"
+#include "./debug.h"
+#include "./funcoes.c"
 
 int num_vars;
+
+pilha_tab_simbolo *tabela;
 
 %}
 
@@ -90,6 +91,21 @@ comandos:
 
 %%
 
+int error_handler(char *s)
+{
+   desaloca();  
+   imprimeErro(s);  
+}
+
+int desaloca()
+{
+   deletar_tabela_simbolo(tabela);
+   // destroy_stack_type(stack_type); // ainda nao foi feita
+   // destroy_stack_rotulo(stack_rotulos); // ainda nao foi feita
+   // destroy_stack_procedimento_simbolo(stack_simbolos_procedure); // ainda nao foi feita
+}
+
+
 int main (int argc, char** argv) {
    FILE* fp;
    extern FILE* yyin;
@@ -105,6 +121,11 @@ int main (int argc, char** argv) {
       return(-1);
    }
 
+   tabela = malloc(sizeof(pilha_tab_simbolo));
+   tabela->primeiro = NULL;
+   tabela->ultimo = NULL;
+   tabela->tam = 0;
+
 
 /* -------------------------------------------------------------------
  *  Inicia a Tabela de Simbolos
@@ -113,5 +134,7 @@ int main (int argc, char** argv) {
    yyin=fp;
    yyparse();
 
+   imprime_tabela_simbolo(tabela);
+   desaloca();
    return 0;
 }

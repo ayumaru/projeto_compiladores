@@ -10,6 +10,8 @@
  * Tipos, prototipos e variaveis globais do compilador (via extern)
  *
  * ------------------------------------------------------------------- */
+#ifndef __COMPILADOR__
+#define __COMPILADOR__
 
 #define TAM_TOKEN 16
 
@@ -45,7 +47,12 @@ extern char token[TAM_TOKEN];
 /* -------------------------------------------------------------------
  * prototipos globais
  * ------------------------------------------------------------------- */
+int imprimeErro(char*);
+int error_handler(char *);
+int desaloca();
 
 void geraCodigo (char*, char*);
 int yylex();
 void yyerror(const char *s);
+
+#endif

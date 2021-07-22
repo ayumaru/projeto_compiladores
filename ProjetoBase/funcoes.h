@@ -55,7 +55,7 @@ void deletar_tabela_simbolo(pilha_tab_simbolo *tabela);
 void deletar_tabela_xy_simbolos(pilha_tab_simbolo *tabela, int quantidade);
 
 void atualiza_deslocament_tabela_simbolo(pilha_tab_simbolo *tabela, int deslocamento);
-void atualiza_simbolo_procedimento_tabela_simbolo(pilha_tab_simbolo *tabela, int deslocamento, tab_simbolo *elemento_pai);
+int atualiza_simbolo_procedimento_tabela_simbolo(pilha_tab_simbolo *tabela, int deslocamento, tab_simbolo *elemento_pai);
 
 tab_simbolo *pega_rotulo_tabela_simbolo(pilha_tab_simbolo *tabela, char *rotulo);
 
