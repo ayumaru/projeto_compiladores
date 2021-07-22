@@ -12,52 +12,33 @@ APAGAR: RAFAEL v
 #include <string.h>
 
 
-void adicionar_tipo_simb(tab_simbolo *elemento_tab, tipos_enum tipo)
-{
-    elemento_tab->tipo = tipo;
-    if (tipo == tipo_INT)
-        strcpy(elemento_tab->novo_tipo, "integer");
-    else if (tipo == tipo_BOOL)
-        strcpy(elemento_tab->novo_tipo, "boolean");
-    // debug
-}
-
-
 tab_simbolo *adicionar_simbolo(pilha_tab_simbolo *tabela, char *nome, tipos_enum categoria, int nv_lexico, int deslocamento)
 {
     tab_simbolo *elemento_tab;
     elemento_tab = malloc(sizeof(tab_simbolo));
-    if (elemento_tab == NULL)
-    {
-        perror("malloc func adicionar_simbolo nao funcionou");
-        exit(EXIT_FAILURE);
-    }
 
     strcpy(elemento_tab->id, nome);
     elemento_tab->categoria = categoria;
     elemento_tab->deslocamento = deslocamento;
     elemento_tab->nv_lexico = nv_lexico;
     
-    adicionar_tipo_simb(elemento_tab, tipo_INDEFINIDO);
-    
+    elemento_tab->tipo = tipo_INDEFINIDO;
     elemento_tab->tipo_param = param_tipo_INDEFINIDO;
     // adicionando null para evitar lixo na string
     elemento_tab->rotulo[0] = '\0'; 
     elemento_tab->rotulo_desv[0] = '\0';
     elemento_tab->qnt_paramentros = 0; // comecando agora, nao e pra ter nada
-    elemento_tab->novo_tipo[0] = '\0';// nao sei pq faz isso, investigar
-
+    
     tabela->tam++;
 
     if (tabela->tam == 1)
     {
         tabela->primeiro = elemento_tab;
-        elemento_tab->ant =  NULL;
+        elemento_tab->ant = NULL;
         elemento_tab->prox = NULL;
     }
     else
     {
-        tabela->primeiro = tabela->ultimo;
         elemento_tab->ant = tabela->ultimo;
         elemento_tab->ant->prox = elemento_tab;
         elemento_tab->prox = NULL;  
@@ -81,10 +62,12 @@ tab_simbolo *busca_simbolo(pilha_tab_simbolo *tabela, char *nome)
             // debugs 
             return elemento_tab;
         }
+
+        elemento_tab = elemento_tab->ant;
     }
     
     debug("[ERRO] não foi possivel encontrar o simbolo [%s] na tabela. \n", nome);
-    error_handler("Simbolo nao encontrado na tabela"); // funcao do compilador.h
+    error_handler("Simbolo nao encontrado na tabela"); 
     return NULL;
 }
 
@@ -101,7 +84,7 @@ void remove_simbolo_tabela(pilha_tab_simbolo *tabela, tab_simbolo *elemento_tab)
     else
         elemento_tab->prox->ant = elemento_tab->ant;
 
-    tabela->tam--;
+    tabela->tam-=1;
 
     free(elemento_tab);
     // debug
@@ -114,23 +97,7 @@ int atualiza_simbolo_tabela_tipo(pilha_tab_simbolo *tabela, categorias_enum tipo
     elemento_tab = tabela->ultimo;
     while (  (elemento_tab != NULL) && (elemento_tab->tipo == tipo_INDEFINIDO)  )
     {
-        adicionar_tipo_simb(elemento_tab, tipo);
-        //debug
-        elemento_tab = elemento_tab->ant;
-    }
-    
-    return 0;
-}
-
-int atualiza_simbolo_tabela_novo_tipo(pilha_tab_simbolo *tabela, categorias_enum tipo, char *nome)
-{
-    tab_simbolo *elemento_tab;
-
-    elemento_tab = tabela->ultimo;
-    while (  (elemento_tab != NULL) && (elemento_tab->tipo == tipo_INDEFINIDO)  )
-    {
-        adicionar_tipo_simb(elemento_tab, tipo);
-        strcpy(elemento_tab->novo_tipo, nome);
+        elemento_tab->tipo = tipo;
         //debug
         elemento_tab = elemento_tab->ant;
     }
@@ -208,7 +175,6 @@ int atualiza_simbolo_procedimento_tabela_simbolo(pilha_tab_simbolo *tabela, int 
         elemento_tab->deslocamento = deslocamento;
         elemento_tab->categoria = cat_param_FORMAL;
         elemento_pai->list_procedimentos_tipo[posicao] = elemento_tab->tipo;
-        strcpy(elemento_pai->lista_novo_tipo[posicao], elemento_tab->novo_tipo);
         elemento_pai->list_passagem_tipo[posicao] = elemento_tab->tipo_param;
         // debugs
 
@@ -249,7 +215,7 @@ tab_simbolo *pega_rotulo_tabela_simbolo(pilha_tab_simbolo *tabela, char *rotulo)
     
     //debug
     debug("[ERRO] Não existe variavel associada ao rotulo >> [%s]\n",rotulo);
-    error_handler("Rotulo nao esta presente na tabela de simbolos.");
+    error_handler("Rotulo nao esta presente na tabela de simbolos.\n");
     return NULL; // nao achou 
 }
 
@@ -272,14 +238,14 @@ int contagem_variaveis_locais(pilha_tab_simbolo *tabela, tab_simbolo *elemento_t
     // else debug sucesso
 
     nodo = nodo->prox;
-    if (nodo == NULL)
-        error_handler("Erro. Não foi possivel encontrar simbolos apos procedimento ");
+    // if (nodo == NULL)
+    //     error_handler("Erro. Não foi possivel encontrar simbolos apos procedimento ");
     //debug
     // RAFAEL v
     // A partir da aula 11, verifiquei a necessidade de excluir o parametro formal, porém quem baixa a pilha não é a instrução
     // Apesar de que faz sentido, visto que outros procedimentos podem declarar variaveis de mesmo nome, e não acontecera colisão
     // Os valores do tipo se encontra em list_procedimentos_tipo
-    while( nodo && (nodo->nv_lexico == elemento_tab->nv_lexico) &&  (nodo->categoria == cat_var_SIMPLES) )
+    while( nodo && (nodo->nv_lexico == elemento_tab->nv_lexico) &&  (nodo->categoria == cat_param_FORMAL) )
     {
         // debug
         aux = nodo;
@@ -287,7 +253,7 @@ int contagem_variaveis_locais(pilha_tab_simbolo *tabela, tab_simbolo *elemento_t
         remove_simbolo_tabela(tabela, aux);
     }
 
-    while( nodo && (nodo->nv_lexico == elemento_tab->nv_lexico) &&  (nodo->categoria == cat_param_FORMAL) )
+    while( nodo && (nodo->nv_lexico == elemento_tab->nv_lexico) &&  (nodo->categoria == cat_var_SIMPLES) )
     {
         aux = nodo;
         nodo = nodo->prox;
@@ -340,34 +306,6 @@ tipos_enum encontra_tipo_en_do_simbolo_procedimento(tab_simbolo *elemento_tab, i
         debug("[ERRO] O nodo foi encontrado antes do tipo, verificar erro [%s], posicao ->[%d]", elemento_tab->id ,posicao);
 
     return nodo->tipo;
-}
-
-tab_simbolo *busca_parametro_lista_simbolo(pilha_tab_simbolo *tabela, tab_simbolo *elemento_tab, int posicao)
-{
-    tab_simbolo *nodo;
-    imprime_tabela_simbolo(tabela); // apagar eventualmente
-
-    nodo = tabela->primeiro;
-    // debug
-
-    while(nodo != NULL)
-    {
-        if (nodo == elemento_tab)
-            break;
-        else
-            nodo = nodo->prox;
-            //debug
-    }
-
-    while( posicao > 0 )
-    {
-        //debug
-        nodo = nodo->prox;
-        posicao-=1;
-    }
-
-    nodo = nodo->prox;
-    return nodo;
 }
 
 void imprime_tabela_simbolo(pilha_tab_simbolo *tabela) // apagar eventualmente 
