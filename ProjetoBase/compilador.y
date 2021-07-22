@@ -8,9 +8,9 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
-#include "./compilador.h"
-#include "./debug.h"
-#include "./funcoes.c"
+#include "compilador.h"
+#include "debug.h"
+#include "funcoes.c"
 
 int num_vars;
 
