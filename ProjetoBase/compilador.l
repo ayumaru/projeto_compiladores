@@ -275,10 +275,55 @@ do  { simbolo = simb_do;
             return DO;
 }
 
-not { simbolo = simb_not;
+not {   simbolo = simb_not;
             strncpy (token, yytext, TAM_TOKEN);
             IMPRIME( " not ");
             return NOT;
+}
+
+
+true {  simbolo = simb_true;
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME( " true ");
+        return TRUE;
+}
+
+false {
+        simbolo = simb_false;
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME( " false ");
+        return FALSE;
+}
+
+
+integer { simbolo = simb_integer;
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME(" integer ");
+        return INTEGER;
+}
+
+boolean { simbolo = simb_boolean;
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME(" boolean ");
+        return BOOLEAN;
+}
+
+read {  simbolo = simb_read;
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME(" read ");
+        return READ;
+}
+
+write { simbolo = simb_write;
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME(" write ");
+        return WRITE;
+}
+
+{numero} { simbolo = simb_numero;
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME(" number ");
+        return NUMBER;
 }
 
 {ident} { simbolo = simb_identificador;

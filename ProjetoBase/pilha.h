@@ -110,5 +110,7 @@ int remove_pilha_simb(pilha_proc_simb *p_proc_sb);
 
 void destroi_pilha_simb(pilha_proc_simb *p_proc_sb);
 
+/* -------------------- FIM PILHA DE PROCEDIMENTOS SIMBOLOS -------------------- */
+
 
 #endif

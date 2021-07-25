@@ -20,7 +20,7 @@ typedef struct tab_simbolo{
     char id[TAM_TOKEN];
     char rotulo[TAM_ROTULO];
     char rotulo_desv[TAM_ROTULO];
-    int qnt_paramentros;
+    int qnt_parametros;
     int deslocamento;
     int nv_lexico;
     int desvio;

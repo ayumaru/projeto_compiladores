@@ -27,7 +27,7 @@ tab_simbolo *adicionar_simbolo(pilha_tab_simbolo *tabela, char *nome, tipos_enum
     // adicionando null para evitar lixo na string
     elemento_tab->rotulo[0] = '\0'; 
     elemento_tab->rotulo_desv[0] = '\0';
-    elemento_tab->qnt_paramentros = 0; // comecando agora, nao e pra ter nada
+    elemento_tab->qnt_parametros = 0; // comecando agora, nao e pra ter nada
     
     tabela->tam++;
 
@@ -160,7 +160,7 @@ void atualiza_deslocament_tabela_simbolo(pilha_tab_simbolo *tabela, int deslocam
 int atualiza_simbolo_procedimento_tabela_simbolo(pilha_tab_simbolo *tabela, int deslocamento, tab_simbolo *elemento_pai)
 {
     tab_simbolo *elemento_tab;
-    int posicao = elemento_pai->qnt_paramentros;
+    int posicao = elemento_pai->qnt_parametros;
 
     posicao-=1;
 
@@ -283,15 +283,15 @@ tipos_enum encontra_tipo_en_do_simbolo_procedimento(tab_simbolo *elemento_tab, i
     tab_simbolo *nodo;
 
     // talvez nao precise desses debug, mas vemos depois
-    if (posicao > elemento_tab->qnt_paramentros )
+    if (posicao > elemento_tab->qnt_parametros )
     {
-        debug("[ERRO] O procedimento [%s] não pode acessar a variavel, somente acessa [%d] variaveis, posicao ->[%d]",elemento_tab->id, elemento_tab->qnt_paramentros, posicao);
+        debug("[ERRO] O procedimento [%s] não pode acessar a variavel, somente acessa [%d] variaveis, posicao ->[%d]",elemento_tab->id, elemento_tab->qnt_parametros, posicao);
     }
 
     if (posicao < 0)
     {
         debug("[ERRO] Como o procedimento le de tras para frente sera acessado posicao - num vair, sendo assim possivel ultrapassar o numero de variaveis e passando um numero negativo");
-        debug("[ERRO] O procedimento [%s] não pode acessar a variavel, somente acessa [%d] variaveis, posicao ->[%d]",elemento_tab->id, elemento_tab->qnt_paramentros, posicao);
+        debug("[ERRO] O procedimento [%s] não pode acessar a variavel, somente acessa [%d] variaveis, posicao ->[%d]",elemento_tab->id, elemento_tab->qnt_parametros, posicao);
     }
 
     nodo = elemento_tab->prox;

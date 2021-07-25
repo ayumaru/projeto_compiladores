@@ -25,7 +25,10 @@ typedef enum simbolos {
   simb_igual, simb_diferente, simb_soma, simb_subtracao, simb_multiplicacao,
   simb_divisao, simb_and, simb_or, simb_label, simb_type, simb_array,
   simb_of, simb_procedure, simb_function, simb_if, simb_else,
-  simb_while, simb_do, simb_not, simb_then
+  simb_while, simb_do, simb_not, simb_then,
+  simb_integer, simb_boolean,
+  simb_true, simb_false,
+  simb_read, simb_write
 } simbolos;
 
 
@@ -47,12 +50,17 @@ extern char token[TAM_TOKEN];
 /* -------------------------------------------------------------------
  * prototipos globais
  * ------------------------------------------------------------------- */
+char parser[32];
 int imprimeErro(char*);
 int error_handler(char *);
 int desaloca();
 
+// Interpreta as variaveis e chama geraCodigo
+
 void geraCodigo (char*, char*);
 int yylex();
 void yyerror(const char *s);
+
+#define pp_geraCodigo(rotulo,fmt, ...) sprintf(parser,fmt,__VA_ARGS__); geraCodigo(rotulo,parser);
 
 #endif
