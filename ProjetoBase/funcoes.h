@@ -20,16 +20,16 @@ typedef struct tab_simbolo{
     char id[TAM_TOKEN];
     char rotulo[TAM_ROTULO];
     char rotulo_desv[TAM_ROTULO];
+    tipos_enum list_procedimentos_tipo[TAM_TOKEN];
+    tipo_passagem_param list_passagem_tipo[TAM_TOKEN];
+    tipos_enum tipo;
+    categorias_enum categoria;
     int qnt_parametros;
     int deslocamento;
     int nv_lexico;
     int desvio;
     tipo_passagem_param tipo_param;
     struct tab_simbolo *ant, *prox;
-    tipos_enum list_procedimentos_tipo[TAM_TOKEN];
-    tipo_passagem_param list_passagem_tipo[TAM_TOKEN];
-    tipos_enum tipo;
-    categorias_enum categoria;
 } tab_simbolo;
 
 typedef struct pilha_tab_simbolo{

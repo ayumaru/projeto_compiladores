@@ -55,7 +55,7 @@ tab_simbolo *busca_simbolo(pilha_tab_simbolo *tabela, char *nome)
 {
     tab_simbolo *elemento_tab;
     elemento_tab = tabela->ultimo;
-    while (elemento_tab != NULL)
+    while (elemento_tab)
     {
         if ( strcmp(elemento_tab->id, nome)  == 0 )
         {
@@ -71,31 +71,12 @@ tab_simbolo *busca_simbolo(pilha_tab_simbolo *tabela, char *nome)
     return NULL;
 }
 
-void remove_simbolo_tabela(pilha_tab_simbolo *tabela, tab_simbolo *elemento_tab)
-{
-    // debug
-    if( elemento_tab == tabela->primeiro )
-        tabela->primeiro = elemento_tab->prox;
-    else 
-        elemento_tab->ant->prox = elemento_tab->prox;
-    
-    if ( elemento_tab == tabela->ultimo )
-        tabela->ultimo = elemento_tab->ant;
-    else
-        elemento_tab->prox->ant = elemento_tab->ant;
-
-    tabela->tam-=1;
-
-    free(elemento_tab);
-    // debug
-}
-
 int atualiza_simbolo_tabela_tipo(pilha_tab_simbolo *tabela, categorias_enum tipo)
 {
     tab_simbolo *elemento_tab;
 
     elemento_tab = tabela->ultimo;
-    while (  (elemento_tab != NULL) && (elemento_tab->tipo == tipo_INDEFINIDO)  )
+    while (  (elemento_tab) && (elemento_tab->tipo == tipo_INDEFINIDO)  )
     {
         elemento_tab->tipo = tipo;
         //debug
@@ -105,13 +86,12 @@ int atualiza_simbolo_tabela_tipo(pilha_tab_simbolo *tabela, categorias_enum tipo
     return 0;
 }
 
-
 void deletar_tabela_simbolo(pilha_tab_simbolo *tabela)
 {
     tab_simbolo *elemento_tab, *apagar;
     
     elemento_tab = tabela->primeiro;
-    while ( elemento_tab != NULL  )
+    while ( elemento_tab )
     {
         apagar = elemento_tab;
         elemento_tab = elemento_tab->prox;
@@ -129,7 +109,7 @@ void deletar_tabela_xy_simbolos(pilha_tab_simbolo *tabela, int quantidade)
     int i = 0; 
     elemento_tab = tabela->ultimo;
 
-    while ( (elemento_tab != NULL) ||  i <= quantidade )
+    while ( (elemento_tab) || (i <= quantidade ))
     {
         apagar = elemento_tab;
         elemento_tab = elemento_tab->ant;
@@ -151,7 +131,6 @@ void atualiza_deslocament_tabela_simbolo(pilha_tab_simbolo *tabela, int deslocam
         deslocamento-=1; 
     }
 }
-
 
 /*
 # Serve para modificar as variaveis simples para categoria de parametro formal
@@ -192,6 +171,7 @@ int atualiza_simbolo_procedimento_tabela_simbolo(pilha_tab_simbolo *tabela, int 
     return 0;
 }
 
+
 // devolve simbolo associado com o rotulo em questao
 tab_simbolo *pega_rotulo_tabela_simbolo(pilha_tab_simbolo *tabela, char *rotulo)
 {
@@ -199,7 +179,7 @@ tab_simbolo *pega_rotulo_tabela_simbolo(pilha_tab_simbolo *tabela, char *rotulo)
 
     //do ultimo para primeiro, pois vai definir os tipos indefinidos
     elemento_tab = tabela->ultimo;
-    while (elemento_tab != NULL)
+    while (elemento_tab)
     {
         if ( elemento_tab->categoria == cat_PROCED )
         {
@@ -216,6 +196,7 @@ tab_simbolo *pega_rotulo_tabela_simbolo(pilha_tab_simbolo *tabela, char *rotulo)
     //debug
     debug("[ERRO] Não existe variavel associada ao rotulo >> [%s]\n",rotulo);
     error_handler("Rotulo nao esta presente na tabela de simbolos.\n");
+
     return NULL; // nao achou 
 }
 
@@ -233,19 +214,17 @@ int contagem_variaveis_locais(pilha_tab_simbolo *tabela, tab_simbolo *elemento_t
     while(nodo != elemento_tab)
         nodo = nodo->ant;
     
-    if (nodo == NULL)
+    if (!nodo)
         error_handler("Erro. Não foi possivel encontrar o simbolo, e falha ao contar a quantidade de variaveis locais\n");
     // else debug sucesso
 
     nodo = nodo->prox;
-    // if (nodo == NULL)
-    //     error_handler("Erro. Não foi possivel encontrar simbolos apos procedimento ");
-    //debug
+   
     // RAFAEL v
     // A partir da aula 11, verifiquei a necessidade de excluir o parametro formal, porém quem baixa a pilha não é a instrução
     // Apesar de que faz sentido, visto que outros procedimentos podem declarar variaveis de mesmo nome, e não acontecera colisão
     // Os valores do tipo se encontra em list_procedimentos_tipo
-    while( nodo && (nodo->nv_lexico == elemento_tab->nv_lexico) &&  (nodo->categoria == cat_param_FORMAL) )
+    while( nodo && (nodo->nv_lexico == elemento_tab->nv_lexico) && (nodo->categoria == cat_param_FORMAL) )
     {
         // debug
         aux = nodo;
@@ -253,7 +232,7 @@ int contagem_variaveis_locais(pilha_tab_simbolo *tabela, tab_simbolo *elemento_t
         remove_simbolo_tabela(tabela, aux);
     }
 
-    while( nodo && (nodo->nv_lexico == elemento_tab->nv_lexico) &&  (nodo->categoria == cat_var_SIMPLES) )
+    while( nodo && (nodo->nv_lexico == elemento_tab->nv_lexico) && (nodo->categoria == cat_var_SIMPLES) )
     {
         aux = nodo;
         nodo = nodo->prox;
@@ -262,9 +241,9 @@ int contagem_variaveis_locais(pilha_tab_simbolo *tabela, tab_simbolo *elemento_t
     }
 
     // agora vai ate o final da tabela
-    while(nodo != NULL)
+    while(nodo)
     {
-        if ( nodo->nv_lexico == (elemento_tab->nv_lexico+1)  )
+        if ( nodo->nv_lexico == (elemento_tab->nv_lexico +1)  )
         {
             aux = nodo;
             nodo = nodo->prox;
@@ -276,6 +255,25 @@ int contagem_variaveis_locais(pilha_tab_simbolo *tabela, tab_simbolo *elemento_t
 
     //procura outras variaveis e delete elas
     return contador;
+}
+
+void remove_simbolo_tabela(pilha_tab_simbolo *tabela, tab_simbolo *elemento_tab)
+{
+    // debug
+    if( elemento_tab == tabela->primeiro )
+        tabela->primeiro = elemento_tab->prox;
+    else 
+        elemento_tab->ant->prox = elemento_tab->prox;
+    
+    if ( elemento_tab == tabela->ultimo )
+        tabela->ultimo = elemento_tab->ant;
+    else
+        elemento_tab->prox->ant = elemento_tab->ant;
+
+    tabela->tam-=1;
+
+    free(elemento_tab);
+    // debug
 }
 
 tipos_enum encontra_tipo_en_do_simbolo_procedimento(tab_simbolo *elemento_tab, int posicao)
@@ -296,13 +294,13 @@ tipos_enum encontra_tipo_en_do_simbolo_procedimento(tab_simbolo *elemento_tab, i
 
     nodo = elemento_tab->prox;
 
-    while( (nodo != NULL) && (posicao != 0 ) )
+    while( (nodo) && (posicao) ) // != 0 and -1
     {
         posicao-=1;
         nodo = nodo->prox;
     }
 
-    if ( posicao > 0 )
+    if ( posicao )
         debug("[ERRO] O nodo foi encontrado antes do tipo, verificar erro [%s], posicao ->[%d]", elemento_tab->id ,posicao);
 
     return nodo->tipo;
@@ -316,6 +314,13 @@ void imprime_tabela_simbolo(pilha_tab_simbolo *tabela) // apagar eventualmente
     while (elemento_tab != NULL)
     {
         // debug
+        debug("init\n");
+        debug("simbolo: [%s]\n",elemento_tab->id);
+        debug("tipo: [%d]\n",elemento_tab->tipo);
+        debug("categoria: [%d]\n",elemento_tab->categoria);
+        debug("nivel_lexico: [%d]\n",elemento_tab->nv_lexico);
+        debug("deslocamento: [%d]\n",elemento_tab->deslocamento);
+        debug("end\n");
         elemento_tab = elemento_tab->ant;
     }
 }
