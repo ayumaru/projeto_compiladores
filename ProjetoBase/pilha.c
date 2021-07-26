@@ -3,6 +3,7 @@
 # melhorar a funcao error_handler com o nome da pilha que deu erro
 */
 
+#include "funcoes.h"
 #include "debug.h"
 #include "pilha.h"
 #include "compilador.h"
@@ -46,25 +47,6 @@ int remove_elemento_tipo_pilha(pilha_tipo_enum *pilha_tipo)
     pilha_tipo->ultimo = pilha_tipo->ultimo->prox;
     pilha_tipo->tam-=1;
     free(nodo);
-}
-
-void destruir_pilha_tipos(pilha_tipo_enum *pilha_tipo)
-{
-    nodo_tipos_enum *nodo, *tmp;
-
-    if(pilha_tipo->tam != 0)
-        debug("[ERRO] A pilha de tipos tem tamanho: [%d]. Masdeveria estar vazia, em caso de execução perfeita\n",pilha_tipo->tam);     
-
-    nodo = pilha_tipo->ultimo;
-
-    while(nodo != NULL)
-    {
-        tmp = nodo;
-        nodo = nodo->prox;
-        free(tmp);
-    }
-    free(pilha_tipo);
-    pilha_tipo = NULL;
 }
 
 // Funcoes da pilha para verificacao de atributo tipos
@@ -119,6 +101,26 @@ void andar_pilha_tipos(pilha_tipo_enum *pilha_tipo) // parece ser func de debug
         debug("[warning] All nodes from stack should have been consumed\n");
     }
 }
+
+void destruir_pilha_tipos(pilha_tipo_enum *pilha_tipo)
+{
+    nodo_tipos_enum *nodo, *tmp;
+
+    if(pilha_tipo->tam != 0)
+        debug("[ERRO] A pilha de tipos tem tamanho: [%d]. Masdeveria estar vazia, em caso de execução perfeita\n",pilha_tipo->tam);     
+
+    nodo = pilha_tipo->ultimo;
+
+    while(nodo)
+    {
+        tmp = nodo;
+        nodo = nodo->prox;
+        free(tmp);
+    }
+    free(pilha_tipo);
+    pilha_tipo = NULL;
+}
+
 /* -------------------- FIM FUNCOES DA PILHA DE TIPOS -------------------- */
 
 /* -------------------- COMECO FUNCOES DA PILHA DE ROTULOS -------------------- */
@@ -161,7 +163,7 @@ void destroi_pilha_rotulo(pilha_rotulo *p_rotulo)
     nodo_rotulo *nodo, *tmp;
 
     nodo = p_rotulo->ultimo;
-    while(nodo != NULL)
+    while(nodo)
     {
         tmp = nodo;
         nodo = nodo->prox;
@@ -226,7 +228,7 @@ void destroi_pilha_deslocamento(pilha_deslocamento *p_deslocamento)
     nodo_deslocamento *nodo, *tmp;
 
     nodo = p_deslocamento->ultimo;
-    while(nodo != NULL)
+    while(nodo)
     {
         tmp = nodo;
         nodo = nodo->prox;
@@ -281,7 +283,7 @@ void destroi_pilha_procedimento_rotulo(pilha_procedimento_rotulo *p_procrot)
     nodo_procedimento_rotulo *nodo, *tmp;
 
     nodo = p_procrot->ultimo;
-    while(nodo != NULL)
+    while(nodo)
     {
         tmp = nodo;
         nodo = nodo->prox;
@@ -336,7 +338,7 @@ void destroi_pilha_simb(pilha_proc_simb *p_proc_sb)
     nodo_proc_simb *nodo, *tmp;
 
     nodo = p_proc_sb->ultimo;
-    while(nodo != NULL)
+    while(nodo)
     {
         tmp = nodo;
         nodo = nodo->prox;
