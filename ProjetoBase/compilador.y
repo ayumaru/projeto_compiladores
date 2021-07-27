@@ -58,13 +58,14 @@ programa:   {
                deslocamento = 0;
                t_num_vars = 0;
             }
-            PROGRAM IDENT { aux = adicionar_simbolo(tabela, token, cat_PROGRAMA, 0, 0);  }
+            PROGRAM IDENT { aux = adicionar_simbolo(tabela, token, cat_PROGRAMA, 0, 0);  debug("[debug] BUCETA ****\n");  }
             ABRE_PARENTESES lista_idents FECHA_PARENTESES PONTO_E_VIRGULA
             bloco PONTO
             {
                if(t_num_vars)
                {
                   pp_geraCodigo(NULL, "DMEM %d", t_num_vars);
+                  debug("[debug] BATATA **** desaloca memoria para [%d] variaveis \n",t_num_vars);
                }
                geraCodigo (NULL, "PARA");
             }
@@ -72,8 +73,10 @@ programa:   {
 
 bloco:   parte_declara_vars
          {
+            debug("[debug] LINE 76 ****\n");
             if ( fg == 0 )
             {
+               debug("[debug] LINE 79 ****\n");
                rot_atual =  insere_rotulo(p_rotulo);
                pp_geraCodigo(NULL, "DSVS %s", rot_atual);
             }
@@ -91,14 +94,17 @@ bloco:   parte_declara_vars
          subrots comando_composto
 ;
 
+parte_declara_vars:  var
+;
 
 // para ter varias subrotinas
-subrots : subrots subrotinas 
+subrots: subrots subrotinas 
          | subrotinas
+;
 
-subrotinas: dec_proced
-            | dec_func
-            | // nada
+subrotinas: {debug("[debug] LINE 105 ****\n"); } dec_proced
+            | {debug("[debug] LINE 106 ****\n");} dec_func
+            | {debug("[debug] LINE 107 ****\n");} // nada
 ;
 
 dec_proced: PROCEDURE dec_proced_pre PONTO_E_VIRGULA dec_proced_pos
@@ -110,10 +116,6 @@ dec_func: FUNCTION dec_proced_pre DOIS_PONTOS def_tipo_func PONTO_E_VIRGULA { si
 def_tipo_func: INTEGER { simbolo_procedimento->tipo = tipo_INT; }
              | BOOLEAN { simbolo_procedimento->tipo = tipo_BOOL; }
 ;
-
-parte_declara_vars:  var
-;
-
 
 dec_proced_pre: IDENT
                   {
@@ -128,6 +130,7 @@ dec_proced_pre: IDENT
                      rot_atual = insere_rotulo(p_rotulo);
                      strcpy(simbolo_procedimento->rotulo_desv, rot_atual);
                      simbolo_procedimento->desvio = 0;
+                     debug("[debug] Rotulo [%s], do simbolo [%s] definido com sucesso\n",simbolo_procedimento->id, simbolo_procedimento->rotulo);
                      proc_num_vars = 0;
                   }
 
@@ -191,6 +194,7 @@ declara_var:   lista_id_var DOIS_PONTOS
                PONTO_E_VIRGULA
                {
                   pp_geraCodigo(NULL, "AMEM %d", par_var);
+                  debug("aloca memoria para [%d] variavei[s]\n",par_var);
                   par_var = 0;
                }
 ;
@@ -205,6 +209,7 @@ variaveis:  IDENT
                deslocamento+= 1;
                num_vars+= 1;
                aux->tipo_param = param_tipo_VALOR;
+               debug("[%s] definido como [passagem por valor]\n",aux->id);
             }
             | VAR IDENT
             {
@@ -212,6 +217,7 @@ variaveis:  IDENT
                deslocamento+= 1;
                num_vars+= 1;
                aux->tipo_param = param_tipo_REF;
+               debug("[%s] definido como [passagem por referencia]\n",aux->id);
             }
 ;
 
@@ -225,6 +231,7 @@ lista_idents: lista_idents VIRGULA IDENT
 
 comando_composto: T_BEGIN 
                      {
+                        debug("[debug] LINE 234 ****, fg: [%d] \n", fg);
                         if (fg == 0)
                         {
                            fg = -1;
@@ -244,14 +251,14 @@ comando_composto: T_BEGIN
                 | //faz nada
 ;
 
-lista_comands: lista_comands PONTO_E_VIRGULA comandos
-             | comandos
+lista_comands: lista_comands PONTO_E_VIRGULA {debug("[debug] LINE 254 pos ****\n");}comandos
+             | {debug("[debug] LINE 255 ****\n");}comandos
 ;
 
-comandos: comando_srotulo
+comandos: {debug("[debug] LINE 258 ****\n");} comando_srotulo
 ;
 
-comando_srotulo: leitura_identificadores
+comando_srotulo: {debug("[debug] LINE 261 ****\n");} leitura_identificadores {debug("[debug] LINE 261 pos ****\n");}
                | comando_composto
                | comando_repeticao
                | leitura_escrita
@@ -268,6 +275,7 @@ lista_parametros_leitura: lista_parametros_leitura VIRGULA leitor_parametros
 
 leitor_parametros: IDENT
                      {
+                        debug("variavel token [read] idenfiticado = [%s]\n",token);
                         aux = busca_simbolo(tabela, token); // pega o simbolo da tabela, gera codigo
                         geraCodigo(NULL, "LEIT");
                         pp_geraCodigo(NULL, "ARMZ %d, %d", aux->nv_lexico, aux->deslocamento);
@@ -283,7 +291,7 @@ escritor_parametros: leitor_variaveis_escrita
                         remove_elemento_tipo_pilha(pilha_tipos);
                         geraCodigo(NULL, "IMPR");
                      }
-                   | NUMBER { pp_geraCodigo(NULL, "CRCT %d", atoi(token)); geraCodigo(NULL, "IMPR"); }
+                   | NUMBER { debug("[write] numero identificado =  [%d]\n",atoi(token)); pp_geraCodigo(NULL, "CRCT %d", atoi(token)); geraCodigo(NULL, "IMPR"); }
 ;
 
 leitor_variaveis_escrita:  IDENT { aux =  busca_simbolo(tabela, token); } eh_funcao
@@ -342,7 +350,7 @@ comando_repeticao:   WHILE
                      }
 ;
 
-leitura_identificadores: IDENT { tmp_att = pega_rotulo_tabela_simbolo(tabela, token); } atribuicao_execucao
+leitura_identificadores: IDENT { debug("[debug] LINE 353 **** token: [%s] || tabela: %s \n", token, tabela->ultimo->id); tmp_att = busca_simbolo(tabela, token); } atribuicao_execucao
 ;
 
 atribuicao_execucao: atribuicao_simples
