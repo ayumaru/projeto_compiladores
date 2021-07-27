@@ -82,10 +82,10 @@ bloco:   parte_declara_vars
             }
             else if ( fg >= 1 )
             {
-               simbolo_desvio = pilha_simbolos_procedimentos->ultimo->simbolo;
+               debug("[debug] LINE 85 ****\n");simbolo_desvio = pilha_simbolos_procedimentos->ultimo->simbolo;
                if( simbolo_desvio->desvio == 0 )
                {
-                  rot_atual = simbolo_desvio->rotulo_desv;
+                  debug("[debug] LINE 88 ****\n");rot_atual = simbolo_desvio->rotulo_desv;
                   pp_geraCodigo(NULL, "DSVS %s", rot_atual);
                   simbolo_desvio->desvio+=1;
                }
@@ -98,9 +98,9 @@ parte_declara_vars:  var
 ;
 
 // para ter varias subrotinas
-subrots: subrots subrotinas 
+subrots : subrots subrotinas 
          | subrotinas
-;
+
 
 subrotinas: {debug("[debug] LINE 105 ****\n"); } dec_proced
             | {debug("[debug] LINE 106 ****\n");} dec_func
@@ -115,7 +115,7 @@ dec_func: FUNCTION dec_proced_pre DOIS_PONTOS def_tipo_func PONTO_E_VIRGULA { si
 
 def_tipo_func: INTEGER { simbolo_procedimento->tipo = tipo_INT; }
              | BOOLEAN { simbolo_procedimento->tipo = tipo_BOOL; }
-;
+
 
 dec_proced_pre: IDENT
                   {
@@ -142,6 +142,7 @@ dec_proced_pre: IDENT
                         atualiza_simbolo_procedimento_tabela_simbolo(tabela, -4, simbolo_procedimento);
                      }
                   }
+;
 ;
 
 dec_proced_pos: bloco
@@ -239,10 +240,10 @@ comando_composto: T_BEGIN
                         }
                         else if (fg >= 1 )
                         {
-                           simbolo_desvio = pilha_simbolos_procedimentos->ultimo->simbolo;
+                           debug("[debug] LINE 242 ****\n");simbolo_desvio = pilha_simbolos_procedimentos->ultimo->simbolo;
                            if (simbolo_desvio->desvio == 1)
                            {
-                              rot_atual = simbolo_desvio->rotulo_desv;
+                              debug("[debug] LINE 245 ****\n");rot_atual = simbolo_desvio->rotulo_desv;
                               geraCodigo(rot_atual, "NADA");
                               simbolo_desvio->desvio+= 1;
                            }
@@ -259,10 +260,10 @@ comandos: {debug("[debug] LINE 258 ****\n");} comando_srotulo
 ;
 
 comando_srotulo: {debug("[debug] LINE 261 ****\n");} leitura_identificadores {debug("[debug] LINE 261 pos ****\n");}
-               | comando_composto
-               | comando_repeticao
-               | leitura_escrita
-               | condicional_if
+               | {debug("[debug] LINE 262 ****\n");}comando_composto
+               | {debug("[debug] LINE 263 ****\n");}comando_repeticao
+               | {debug("[debug] LINE 264 ****\n");}leitura_escrita
+               | {debug("[debug] LINE 265 ****\n");}condicional_if
 ;
 
 leitura_escrita: READ ABRE_PARENTESES lista_parametros_leitura FECHA_PARENTESES
@@ -308,12 +309,14 @@ pre_if: IF expressao
 condicional_if: pre_if %prec LOWER_THAN_ELSE
                   {
                      rot_atual = p_rotulo->ultimo->rotulo;
+                     debug("[debug/////] Rotulo do then sem else [%s]\n",rot_atual);
                      geraCodigo(rot_atual, "NADA");
                      remove_rotulo(p_rotulo);
                   }
               | pre_if ELSE 
                   {
-                     rot_atual = p_rotulo->ultimo->rotulo;
+                     rot_atual = insere_rotulo(p_rotulo);
+                     //rot_atual = p_rotulo->ultimo->rotulo;
                      rot_ant = p_rotulo->ultimo->prox->rotulo;
                      pp_geraCodigo(NULL, "DSVS %s", rot_atual);
                      geraCodigo(rot_ant, "NADA");
@@ -351,15 +354,15 @@ comando_repeticao:   WHILE
 ;
 
 leitura_identificadores: IDENT { debug("[debug] LINE 353 **** token: [%s] || tabela: %s \n", token, tabela->ultimo->id); tmp_att = busca_simbolo(tabela, token); } atribuicao_execucao
-;
 
-atribuicao_execucao: atribuicao_simples
-                   | executa
+
+atribuicao_execucao: {debug("[debug] LINE 356 ****\n");}atribuicao_simples
+                   | {debug("[debug] LINE 357 ****\n");}executa
 ;
 
 atribuicao_simples: ATRIBUICAO expressao
                      {
-                        if ( tmp_att->categoria  == cat_PROCED )
+                        debug("[debug] LINE 362 ****\n");if ( tmp_att->categoria  == cat_PROCED )
                            error_handler("Procedimentos nao podem ser utilizados como atribuicao");
                         
                         element = tmp_att->tipo;
@@ -383,12 +386,12 @@ atribuicao_simples: ATRIBUICAO expressao
 ;
 
 executa: leitura_vars_procedimento { pp_geraCodigo(NULL, "CHPR %s, %d", tmp_att->rotulo, nv_lexico); }
-;
+
 
 leitura_vars_procedimento: ABRE_PARENTESES FECHA_COLCHETES // nao teve vars
                          | ABRE_PARENTESES { atual_qnt_simb = tmp_att->qnt_parametros; pos_param = 0; } params_procedimento FECHA_PARENTESES
                          | // faz nada
-;
+
 
 params_procedimento: params_procedimento VIRGULA testagem
                    | testagem
@@ -412,30 +415,30 @@ testagem: {
 
 expressao: operacao MAIOR operacao {  verificador_tipos(pilha_tipos, tipo_INT, tipo_BOOL); geraCodigo(NULL, "CMMA");}
          | operacao MAIOR_IGUAL operacao {  verificador_tipos(pilha_tipos, tipo_INT, tipo_BOOL); geraCodigo(NULL, "CMAG");}
-         | operacao MENOR operacao {  verificador_tipos(pilha_tipos, tipo_INT, tipo_BOOL); geraCodigo(NULL, "CMME");}
+         | operacao MENOR operacao { debug("[debug] LINE 415 pre verificador ****\n"); verificador_tipos(pilha_tipos, tipo_INT, tipo_BOOL); geraCodigo(NULL, "CMME");}
          | operacao MENOR_IGUAL operacao {  verificador_tipos(pilha_tipos, tipo_INT, tipo_BOOL); geraCodigo(NULL, "CMEG");}
          | operacao IGUAL operacao {  verificador_tipos(pilha_tipos, tipo_INT, tipo_BOOL); geraCodigo(NULL, "CMIG");}
          | operacao DIFERENTE operacao {  verificador_tipos(pilha_tipos, tipo_INT, tipo_BOOL); geraCodigo(NULL, "CMDG");}
-         | operacao
+         | operacao {debug("[debug] LINE 419 ****\n");}
 ;
 
 operacao: operacao SOMA termo { verificador_tipos(pilha_tipos, tipo_INT, tipo_INT); geraCodigo(NULL, "SOMA"); }
         | operacao SUBTRACAO termo { verificador_tipos(pilha_tipos, tipo_INT, tipo_INT); geraCodigo(NULL, "SUBT"); }
         | operacao OR termo { verificador_tipos(pilha_tipos, tipo_BOOL, tipo_BOOL); geraCodigo(NULL, "DISJ"); }
-        | termo
+        | termo {debug("[debug] LINE 425 ****\n");}
 ;
 
 termo: termo MULTIPLICACAO pre_fator { verificador_tipos(pilha_tipos, tipo_INT, tipo_INT); geraCodigo(NULL, "MULT"); }
      | termo DIVISAO pre_fator { verificador_tipos(pilha_tipos, tipo_INT, tipo_INT); geraCodigo(NULL, "DIVI"); }
      | termo AND pre_fator { verificador_tipos(pilha_tipos, tipo_BOOL, tipo_BOOL); geraCodigo(NULL, "CONJ"); }
-     | pre_fator
+     | {debug("[debug] LINE 431 ****\n");}pre_fator {debug("[debug] LINE 431 pos ****\n");}
 ;
 
 pre_fator:  {
-               op_atrib+= 1;
+               debug("[debug] LINE 435 ****\n"); op_atrib+= 1;
                if (fg_pass && (op_atrib > 1))
                {
-                  if (tmp_att)
+                  debug("[debug] LINE 438 ****\n");if (tmp_att)
                      error_handler("Nao eh permitido atribuicao em passagem por referencia");
                   else
                      error_handler("Nao eh permitido atribuicao em passagem por referencia");
@@ -447,10 +450,10 @@ fator: leitura_variaveis
      | NUMBER { pp_geraCodigo(NULL, "CRCT %d", atoi(token)); insere_elemento_tipo_pilha(pilha_tipos, tipo_INT); }
      | TRUE { geraCodigo(NULL, "CRCT 1"); insere_elemento_tipo_pilha(pilha_tipos, tipo_BOOL); }
      | FALSE { geraCodigo(NULL, "CRCT 0"); insere_elemento_tipo_pilha(pilha_tipos, tipo_BOOL); }
-     | ABRE_PARENTESES expressao FECHA_PARENTESES
+     | {debug("[debug] LINE 450 pre ****\n");} ABRE_PARENTESES expressao {debug("[debug] LINE 450 pos ****\n");}FECHA_PARENTESES
 ;
 
-leitura_variaveis: IDENT { aux = busca_simbolo(tabela, token); } eh_funcao
+leitura_variaveis: IDENT { debug("[debug] LINE 453 pre ****\n");aux = busca_simbolo(tabela, token); } eh_funcao
 ;
 
 eh_funcao: ABRE_PARENTESES { geraCodigo(NULL, "AMEM 1"); } declara_func
@@ -462,21 +465,23 @@ eh_funcao: ABRE_PARENTESES { geraCodigo(NULL, "AMEM 1"); } declara_func
                        pp_geraCodigo(NULL, "CRVL %d, %d", aux->nv_lexico, aux->deslocamento);
                   }
                   else
+                  {
                      pp_geraCodigo(NULL, "CREN %d, %d", aux->nv_lexico, aux->deslocamento);
+                  }
                }
                else if ( aux->tipo_param == param_tipo_REF )
                {
                   pp_geraCodigo(NULL, "CRVI %d, %d", aux->nv_lexico, aux->deslocamento);
                }
                else
-                  pp_geraCodigo(NULL, "CRVL %d, %d", aux->nv_lexico, aux->deslocamento);
-
-            
+               {
+                     pp_geraCodigo(NULL, "CRVL %d, %d", aux->nv_lexico, aux->deslocamento);
+               }
                insere_elemento_tipo_pilha(pilha_tipos, aux->tipo);
             }
-;
 
-declara_func: FECHA_PARENTESES { insere_elemento_tipo_pilha(pilha_tipos, aux->tipo); }
+
+declara_func: FECHA_PARENTESES {debug("[debug] LINE 479 pre ****\n"); insere_elemento_tipo_pilha(pilha_tipos, aux->tipo); }
             | declara_params_funcao FECHA_PARENTESES { insere_elemento_tipo_pilha(pilha_tipos, simbolo_funcao->tipo); }
 ;
 
