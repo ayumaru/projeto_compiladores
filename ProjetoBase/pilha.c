@@ -246,7 +246,7 @@ int andar_pilha_deslocamento(pilha_deslocamento *p_deslocamento) // debug
 
     for(int nivel = 0; (nodo != NULL); nivel++)
     {
-        debug("[DEBUG]tipo = [%s], nivel = [%d]\n",nodo->desloc, nivel);
+        debug("[DEBUG]tipo = [%d], nivel = [%d]\n",nodo->desloc, nivel);
         nodo = nodo->prox;
         debug("[warning] All nodes from stack should have been consumed\n");
     }
