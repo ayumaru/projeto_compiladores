@@ -28,7 +28,8 @@ typedef enum simbolos {
   simb_while, simb_do, simb_not, simb_then,
   simb_integer, simb_boolean,
   simb_true, simb_false,
-  simb_read, simb_write
+  simb_read, simb_write,
+  simb_repeat, simb_until
 } simbolos;
 
 

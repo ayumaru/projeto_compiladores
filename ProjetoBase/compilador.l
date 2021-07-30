@@ -322,6 +322,18 @@ write { simbolo = simb_write;
         return WRITE;
 }
 
+repeat { simbolo = simb_repeat;
+         strncpy (token, yytext, TAM_TOKEN);
+         IMPRIME(" repeat ");
+         return REPEAT;
+}
+
+until { simbolo = simb_until;
+        strncpy (token, yytext, TAM_TOKEN);
+        IMPRIME(" until ");
+        return UNTIL;
+}
+
 {numero} { simbolo = simb_numero;
         strncpy (token, yytext, TAM_TOKEN);
         IMPRIME(" number ");

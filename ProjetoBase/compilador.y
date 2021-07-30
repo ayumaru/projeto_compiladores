@@ -46,6 +46,7 @@ int salto[TAM_TOKEN], pos_salto = 0;
 %token INTEGER BOOLEAN NUMBER
 %token TRUE FALSE
 %token READ WRITE
+%token REPEAT UNTIL
 
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
@@ -257,9 +258,10 @@ comandos:  comando_srotulo
 
 comando_srotulo: leitura_identificadores
                | comando_composto
-               | comando_repeticao
+               | comando_repeticao_while
                | leitura_escrita
                | condicional_if
+               | comando_repeticao_repeat_until
 ;
 
 leitura_escrita: READ ABRE_PARENTESES lista_parametros_leitura FECHA_PARENTESES
@@ -324,7 +326,25 @@ condicional_if: pre_if %prec LOWER_THAN_ELSE
                   } 
 ;
 
-comando_repeticao:   WHILE 
+comando_repeticao_repeat_until: REPEAT
+                              {
+                                 rot_atual = insere_rotulo(p_rotulo);
+                                 geraCodigo(rot_atual, "NADA");
+                              }
+                              lista_comands PONTO_E_VIRGULA
+                              UNTIL expressao 
+                              {
+                                 rot_atual = p_rotulo->ultimo->rotulo;
+                                 rot_ant = p_rotulo->ultimo->prox->rotulo;
+                                 debug("[DEBUG] error rotulo atual:: %s ", rot_atual);
+                                 pp_geraCodigo(NULL, "DSVF %s", rot_atual);
+                                 remove_rotulo(p_rotulo);
+                                 debug("[DEBUG] error rotulo atual:: %s ", rot_ant);
+                                 verifica_tipos_expressao(pilha_tipos, tipo_BOOL);
+                              }
+;
+
+comando_repeticao_while:   WHILE 
                      {
                         rot_atual = insere_rotulo(p_rotulo);
                         geraCodigo(rot_atual, "NADA");
@@ -576,7 +596,7 @@ int main (int argc, char** argv) {
    yyin=fp;
    yyparse();
 
-   imprime_tabela_simbolo(tabela);
+   //imprime_tabela_simbolo(tabela);
    desaloca();
    return 0;
 }
